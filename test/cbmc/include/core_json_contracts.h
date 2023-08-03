@@ -4,22 +4,23 @@
  *
  * SPDX-License-Identifier: MIT
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 #ifndef CORE_JSON_CONTRACTS_H_
@@ -29,23 +30,28 @@
 
 #include "core_json.h"
 
-#define isBool( x )             ( ( x == true ) || ( x == false ) )
+#define isBool( x ) ( ( x == true ) || ( x == false ) )
 
 /* Parameter check fail values for JSON API functions. */
-#define isParameterEnum( x )    ( ( x == JSONNullParameter ) || ( x == JSONBadParameter ) )
+#define isParameterEnum( x ) \
+    ( ( x == JSONNullParameter ) || ( x == JSONBadParameter ) )
 
 /* These 3 enums represent all the ways skipCollection() can fail. */
-#define isSkipCollectionFailEnum( x ) \
-    ( ( x == JSONPartial ) || ( x == JSONIllegalDocument ) || ( x == JSONMaxDepthExceeded ) )
+#define isSkipCollectionFailEnum( x )                         \
+    ( ( x == JSONPartial ) || ( x == JSONIllegalDocument ) || \
+      ( x == JSONMaxDepthExceeded ) )
 
 /* All possible return values for skipCollection(). */
-#define isSkipCollectionEnum( x )    ( isSkipCollectionFailEnum( x ) || ( x == JSONSuccess ) )
+#define isSkipCollectionEnum( x ) \
+    ( isSkipCollectionFailEnum( x ) || ( x == JSONSuccess ) )
 
 /* All possible return values for JSON_Validate(). */
-#define isJSONValidateEnum( x )      ( isSkipCollectionEnum( x ) || isParameterEnum( x ) )
+#define isJSONValidateEnum( x ) \
+    ( isSkipCollectionEnum( x ) || isParameterEnum( x ) )
 
 /* All possible return values for JSON_Search(). */
-#define isJSONSearchEnum( x )        ( isJSONValidateEnum( x ) || ( x == JSONNotFound ) )
+#define isJSONSearchEnum( x ) \
+    ( isJSONValidateEnum( x ) || ( x == JSONNotFound ) )
 
 /* All possible return values for JSON_Iterate(). */
 #define isJSONIterateEnum( x )                                \
@@ -53,48 +59,42 @@
       ( x == JSONNotFound ) || ( x == JSONSuccess ) )
 
 /* All possible type values output from JSON_SearchT(). */
-#define isJSONTypesEnum( x ) \
-    ( ( x == JSONString ) || \
-      ( x == JSONNumber ) || \
-      ( x == JSONTrue ) ||   \
-      ( x == JSONFalse ) ||  \
-      ( x == JSONNull ) ||   \
-      ( x == JSONObject ) || \
+#define isJSONTypesEnum( x )                                             \
+    ( ( x == JSONString ) || ( x == JSONNumber ) || ( x == JSONTrue ) || \
+      ( x == JSONFalse ) || ( x == JSONNull ) || ( x == JSONObject ) ||  \
       ( x == JSONArray ) )
 
-#define IMPLIES( a, b )    ( a ? b : true )
+#define IMPLIES( a, b )  ( a ? b : true )
 
 /**
  * Renaming all contract clauses from CBMC for readability.
  * For more information about contracts in CBMC, see
  * https://diffblue.github.io/cbmc/contracts-user.html.
  */
-#define requires            __CPROVER_requires
-#define ensures             __CPROVER_ensures
-#define assigns             __CPROVER_assigns
+#define requires         __CPROVER_requires
+#define ensures          __CPROVER_ensures
+#define assigns          __CPROVER_assigns
 
 /**
  * Renaming all standard predicates from CBMC for readability.
  * For more information about contracts in CBMC, see
  * https://diffblue.github.io/cbmc/contracts-user.html.
  */
-#define allocated           __CPROVER_is_fresh
-#define old                 __CPROVER_old
-#define result              __CPROVER_return_value
-#define pointer_in_range    __CPROVER_pointer_in_range_dfcc
+#define allocated        __CPROVER_is_fresh
+#define old              __CPROVER_old
+#define result           __CPROVER_return_value
+#define pointer_in_range __CPROVER_pointer_in_range_dfcc
 
 /**
- * These are declarations for all predicates used in coreJSON function contracts.
+ * These are declarations for all predicates used in coreJSON function
+ * contracts.
  */
 
-bool isValidBoundedBuffer( char * buf,
-                           size_t max );
+bool isValidBoundedBuffer( char * buf, size_t max );
 bool isValidBoundedBufferWithStartIndex( char * buf,
                                          size_t max,
                                          size_t * start );
-bool isValidStart( size_t start,
-                   size_t old_start,
-                   size_t max );
+bool isValidStart( size_t start, size_t old_start, size_t max );
 bool JSON_SearchConstPreconditions( char * buf,
                                     size_t max,
                                     char * query,
@@ -116,8 +116,7 @@ bool JSON_IteratePostconditions( JSONStatus_t result,
                                  char * buf,
                                  size_t max,
                                  JSONPair_t * outPair );
-JSONStatus_t JSON_ValidatePreconditions( char * buf,
-                                         size_t max );
+JSONStatus_t JSON_ValidatePreconditions( char * buf, size_t max );
 bool arraySearchPreconditions( char * buf,
                                size_t max,
                                size_t * outValue,
@@ -180,26 +179,32 @@ JSONStatus_t JSON_SearchConst( const char * buf,
                                const char ** outValue,
                                size_t * outValueLength,
                                JSONTypes_t * outType )
-requires( JSON_SearchConstPreconditions( buf, max, query, queryLength, outValue, outValueLength, outType ) )
+    requires( JSON_SearchConstPreconditions( buf,
+                                             max,
+                                             query,
+                                             queryLength,
+                                             outValue,
+                                             outValueLength,
+                                             outType ) )
 assigns( *outValue, *outValueLength, *outType )
-ensures( JSON_SearchConstPostconditions( result, buf, outValue, outValueLength, max ) )
-;
+    ensures( JSON_SearchConstPostconditions( result,
+                                             buf,
+                                             outValue,
+                                             outValueLength,
+                                             max ) );
 
 JSONStatus_t JSON_Iterate( const char * buf,
                            size_t max,
                            size_t * start,
                            size_t * next,
                            JSONPair_t * outPair )
-requires( JSON_IteratePreconditions( buf, max, start, next, outPair ) )
+    requires( JSON_IteratePreconditions( buf, max, start, next, outPair ) )
 assigns( *start, *next, *outPair )
-ensures( JSON_IteratePostconditions( result, buf, max, outPair ) )
-;
+    ensures( JSON_IteratePostconditions( result, buf, max, outPair ) );
 
-JSONStatus_t JSON_Validate( const char * buf,
-                            size_t max )
-requires( JSON_ValidatePreconditions( buf, max ) )
-ensures( isJSONValidateEnum( result ) )
-;
+JSONStatus_t JSON_Validate( const char * buf, size_t max )
+    requires( JSON_ValidatePreconditions( buf, max ) )
+ensures( isJSONValidateEnum( result ) );
 
 /**
  * These are declarations for the (normally) static functions from core_json.c
@@ -213,10 +218,15 @@ bool arraySearch( const char * buf,
                   uint32_t queryIndex,
                   size_t * outValue,
                   size_t * outValueLength )
-requires( arraySearchPreconditions( buf, max, outValue, outValueLength ) )
+    requires( arraySearchPreconditions( buf, max, outValue, outValueLength ) )
 assigns( *outValue, *outValueLength )
-ensures( arraySearchPostconditions( result, buf, max, outValue, outValueLength, old( *outValue ), old( *outValueLength ) ) )
-;
+    ensures( arraySearchPostconditions( result,
+                                        buf,
+                                        max,
+                                        outValue,
+                                        outValueLength,
+                                        old( *outValue ),
+                                        old( *outValueLength ) ) );
 
 bool objectSearch( const char * buf,
                    size_t max,
@@ -224,84 +234,66 @@ bool objectSearch( const char * buf,
                    size_t queryLength,
                    size_t * outValue,
                    size_t * outValueLength )
-requires( objectSearchPreconditions( buf, max, query, queryLength, outValue, outValueLength ) )
+    requires( objectSearchPreconditions( buf,
+                                         max,
+                                         query,
+                                         queryLength,
+                                         outValue,
+                                         outValueLength ) )
 assigns( *outValue, *outValueLength )
-ensures( arraySearchPostconditions( result, buf, max, outValue, outValueLength, old( *outValue ), old( *outValueLength ) ) )
-;
+    ensures( arraySearchPostconditions( result,
+                                        buf,
+                                        max,
+                                        outValue,
+                                        outValueLength,
+                                        old( *outValue ),
+                                        old( *outValueLength ) ) );
 
-JSONStatus_t skipCollection( const char * buf,
-                             size_t * start,
-                             size_t max )
-requires( isValidBoundedBufferWithStartIndex( buf, max, start ) )
-assigns( *start )
-ensures( skipCollectionPostconditions( result, buf, start, old( *start ), max ) )
-;
+JSONStatus_t skipCollection( const char * buf, size_t * start, size_t max )
+    requires( isValidBoundedBufferWithStartIndex( buf, max, start ) )
+assigns( *start ) ensures(
+    skipCollectionPostconditions( result, buf, start, old( *start ), max ) );
 
-void skipScalars( const char * buf,
-                  size_t * start,
-                  size_t max,
-                  char mode )
-requires( skipScalarsPreconditions( buf, start, max, mode ) )
-assigns( *start )
-ensures( isValidStart( *start, old( *start ), max ) )
-;
+void skipScalars( const char * buf, size_t * start, size_t max, char mode )
+    requires( skipScalarsPreconditions( buf, start, max, mode ) )
+assigns( *start ) ensures( isValidStart( *start, old( *start ), max ) );
 
-void skipObjectScalars( const char * buf,
-                        size_t * start,
-                        size_t max )
-requires( isValidBoundedBufferWithStartIndex( buf, max, start ) )
-assigns( *start )
-ensures( isValidStart( *start, old( *start ), max ) )
-;
+void skipObjectScalars( const char * buf, size_t * start, size_t max )
+    requires( isValidBoundedBufferWithStartIndex( buf, max, start ) )
+assigns( *start ) ensures( isValidStart( *start, old( *start ), max ) );
 
-bool skipAnyScalar( const char * buf,
-                    size_t * start,
-                    size_t max )
-requires( isValidBoundedBufferWithStartIndex( buf, max, start ) )
-assigns( *start )
-ensures( skipAnyScalarPostconditions( result, buf, start, old( *start ), max ) )
-;
+bool skipAnyScalar( const char * buf, size_t * start, size_t max )
+    requires( isValidBoundedBufferWithStartIndex( buf, max, start ) )
+assigns( *start ) ensures(
+    skipAnyScalarPostconditions( result, buf, start, old( *start ), max ) );
 
-void skipSpace( const char * buf,
-                size_t * start,
-                size_t max )
-requires( isValidBoundedBufferWithStartIndex( buf, max, start ) )
-assigns( *start )
-ensures( isValidStart( *start, old( *start ), max ) )
-;
+void skipSpace( const char * buf, size_t * start, size_t max )
+    requires( isValidBoundedBufferWithStartIndex( buf, max, start ) )
+assigns( *start ) ensures( isValidStart( *start, old( *start ), max ) );
 
-bool skipString( const char * buf,
-                 size_t * start,
-                 size_t max )
-requires( isValidBoundedBufferWithStartIndex( buf, max, start ) )
+bool skipString( const char * buf, size_t * start, size_t max )
+    requires( isValidBoundedBufferWithStartIndex( buf, max, start ) )
 assigns( *start )
-ensures( skipPostconditions( result, buf, start, old( *start ), max, 1 ) )
-;
+    ensures( skipPostconditions( result, buf, start, old( *start ), max, 1 ) );
 
-bool skipEscape( const char * buf,
-                 size_t * start,
-                 size_t max )
-requires( isValidBoundedBufferWithStartIndex( buf, max, start ) )
+bool skipEscape( const char * buf, size_t * start, size_t max )
+    requires( isValidBoundedBufferWithStartIndex( buf, max, start ) )
 assigns( *start )
-ensures( skipPostconditions( result, buf, start, old( *start ), max, 1 ) )
-;
+    ensures( skipPostconditions( result, buf, start, old( *start ), max, 1 ) );
 
-bool skipUTF8( const char * buf,
-               size_t * start,
-               size_t max )
-requires( isValidBoundedBufferWithStartIndex( buf, max, start ) )
+bool skipUTF8( const char * buf, size_t * start, size_t max )
+    requires( isValidBoundedBufferWithStartIndex( buf, max, start ) )
 assigns( *start )
-ensures( skipPostconditions( result, buf, start, old( *start ), max, 0 ) )
-;
+    ensures( skipPostconditions( result, buf, start, old( *start ), max, 0 ) );
 
 bool skipDigits( const char * buf,
                  size_t * start,
                  size_t max,
                  int32_t * outValue )
-requires( skipDigitsPreconditions( buf, start, max, outValue ) )
-assigns( *start;
-         outValue != NULL: *outValue )
-ensures( skipDigitsPostconditions( result, buf, start, old( *start ), max, 0 ) )
-;
+    requires( skipDigitsPreconditions( buf, start, max, outValue ) )
+assigns( *start; outValue != NULL
+         : *outValue )
+    ensures(
+        skipDigitsPostconditions( result, buf, start, old( *start ), max, 0 ) );
 
 #endif /* ifndef CORE_JSON_CONTRACTS_H_ */
