@@ -1,16 +1,17 @@
-skipCollection proof
-==============
+# skipCollection proof
 
-This directory contains a memory safety proof for `skipCollection`.
-The proof runs in a few seconds and provides 100% coverage.
+This directory contains a memory safety proof for `skipCollection`. The proof
+runs in a few seconds and provides 100% coverage.
 
 For this proof, the following functions are replaced with function contracts.
 These functions have separate proofs.
-* `skipScalars`;
-* `skipSpace`.
+
+- `skipScalars`;
+- `skipSpace`.
 
 To run the proof.
-* Add `cbmc`, `goto-cc`, `goto-instrument`, `goto-analyzer`, and `cbmc-viewer`
+
+- Add `cbmc`, `goto-cc`, `goto-instrument`, `goto-analyzer`, and `cbmc-viewer`
   to your path;
-* Run `make`;
-* Open `html/index.html` in a web browser.
+- Run `make`;
+- Open `html/index.html` in a web browser.
