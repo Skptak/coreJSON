@@ -70,7 +70,7 @@ static void catchHandler_( int signal )
         }                                    \
         else                                 \
         {                                    \
-            catch ++;                        \
+            catch++;                        \
         }                                    \
         sigaction( SIGABRT, &saveSa, NULL ); \
         dup2( saveFd, 2 );                   \
