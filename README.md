@@ -1,5 +1,7 @@
 ## coreJSON Library
 
+**[API Documentation Pages for current and previous releases of this library can be found here](https://freertos.github.io/coreJSON/)**
+
 This repository contains the coreJSON library, a parser that strictly enforces
 the ECMA-404 JSON standard and is suitable for low memory footprint embedded
 devices. The coreJSON library is distributed under the
