@@ -53,29 +53,30 @@ static void catchHandler_( int signal )
     longjmp( CATCH_JMPBUF, signal );
 }
 #pragma GCC diagnostic pop
-/* clang-format off */
-#define catch_assert( x )                    \
-    do                                       \
-    {                                        \
-        int try = 0, catch = 0;              \
-        int saveFd = dup( 2 );               \
-        struct sigaction sa = { 0 }, saveSa; \
-        sa.sa_handler = catchHandler_;       \
-        sigaction( SIGABRT, &sa, &saveSa );  \
-        close( 2 );                          \
-        if( setjmp( CATCH_JMPBUF ) == 0 )    \
-        {                                    \
-            try++;                           \
-            x;                               \
-        }                                    \
-        else                                 \
-        {                                    \
-            catch++;                         \
-        }                                    \
-        sigaction( SIGABRT, &saveSa, NULL ); \
-        dup2( saveFd, 2 );                   \
-        close( saveFd );                     \
-        TEST_ASSERT_EQUAL( try, catch );     \
+
+#define catch_assert( x )                              \
+    do                                                 \
+    {                                                  \
+        int attempts = 0;                              \
+        int failedAttempts = 0;                        \
+        int saveFd = dup( 2 );                         \
+        struct sigaction sa = { 0 }, saveSa;           \
+        sa.sa_handler = catchHandler_;                 \
+        sigaction( SIGABRT, &sa, &saveSa );            \
+        close( 2 );                                    \
+        if( setjmp( CATCH_JMPBUF ) == 0 )              \
+        {                                              \
+            attempts++;                                \
+            x;                                         \
+        }                                              \
+        else                                           \
+        {                                              \
+            failedAttempts++;                          \
+        }                                              \
+        sigaction( SIGABRT, &saveSa, NULL );           \
+        dup2( saveFd, 2 );                             \
+        close( saveFd );                               \
+        TEST_ASSERT_EQUAL( attempts, failedAttempts ); \
     } while( 0 )
-/* clang-format on */
+
 #endif /* ifndef CATCH_ASSERT_H_ */
