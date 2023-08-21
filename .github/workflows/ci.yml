@@ -145,12 +145,12 @@ jobs:
     runs-on: cbmc_ubuntu-latest_64-core
     steps:
       - name: Set up CBMC runner
-        uses: FreeRTOS/CI-CD-Github-Actions/set_up_cbmc_runner@v2
+        uses: FreeRTOS/CI-CD-Github-Actions/set_up_cbmc_runner@main
         with:
           cbmc_version: "latest"
           cadical_tag: "latest"
           kissat_tag: "latest"
       - name: Run CBMC
-        uses: FreeRTOS/CI-CD-Github-Actions/run_cbmc@v2
+        uses: FreeRTOS/CI-CD-Github-Actions/run_cbmc@main
         with:
           proofs_dir: test/cbmc/proofs
