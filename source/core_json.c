@@ -27,11 +27,11 @@
  * @brief The source file that implements the user-facing functions in core_json.h.
  */
 
+#include "core_json.h"
 #include <assert.h>
 #include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "core_json.h"
 
 /** @cond DO_NOT_DOCUMENT */
 
@@ -42,25 +42,24 @@ typedef union
     uint8_t u;
 } char_;
 
-#if ( CHAR_MIN == 0 )
-    #define isascii_( x )    ( ( x ) <= '\x7F' )
+#if( CHAR_MIN == 0 )
+    #define isascii_( x ) ( ( x ) <= '\x7F' )
 #else
-    #define isascii_( x )    ( ( x ) >= '\0' )
+    #define isascii_( x ) ( ( x ) >= '\0' )
 #endif
-#define iscntrl_( x )        ( isascii_( x ) && ( ( x ) < ' ' ) )
-#define isdigit_( x )        ( ( ( x ) >= '0' ) && ( ( x ) <= '9' ) )
+#define iscntrl_( x ) ( isascii_( x ) && ( ( x ) < ' ' ) )
+#define isdigit_( x ) ( ( ( x ) >= '0' ) && ( ( x ) <= '9' ) )
 /* NB. This is whitespace as defined by the JSON standard (ECMA-404). */
-#define isspace_( x )                          \
-    ( ( ( x ) == ' ' ) || ( ( x ) == '\t' ) || \
-      ( ( x ) == '\n' ) || ( ( x ) == '\r' ) )
+#define isspace_( x ) \
+    ( ( ( x ) == ' ' ) || ( ( x ) == '\t' ) || ( ( x ) == '\n' ) || ( ( x ) == '\r' ) )
 
-#define isOpenBracket_( x )           ( ( ( x ) == '{' ) || ( ( x ) == '[' ) )
-#define isCloseBracket_( x )          ( ( ( x ) == '}' ) || ( ( x ) == ']' ) )
-#define isCurlyPair_( x, y )          ( ( ( x ) == '{' ) && ( ( y ) == '}' ) )
-#define isSquarePair_( x, y )         ( ( ( x ) == '[' ) && ( ( y ) == ']' ) )
-#define isMatchingBracket_( x, y )    ( isCurlyPair_( x, y ) || isSquarePair_( x, y ) )
-#define isSquareOpen_( x )            ( ( x ) == '[' )
-#define isSquareClose_( x )           ( ( x ) == ']' )
+#define isOpenBracket_( x )        ( ( ( x ) == '{' ) || ( ( x ) == '[' ) )
+#define isCloseBracket_( x )       ( ( ( x ) == '}' ) || ( ( x ) == ']' ) )
+#define isCurlyPair_( x, y )       ( ( ( x ) == '{' ) && ( ( y ) == '}' ) )
+#define isSquarePair_( x, y )      ( ( ( x ) == '[' ) && ( ( y ) == ']' ) )
+#define isMatchingBracket_( x, y ) ( isCurlyPair_( x, y ) || isSquarePair_( x, y ) )
+#define isSquareOpen_( x )         ( ( x ) == '[' )
+#define isSquareClose_( x )        ( ( x ) == ']' )
 
 /**
  * @brief Advance buffer index beyond whitespace.
@@ -69,9 +68,7 @@ typedef union
  * @param[in,out] start  The index at which to begin.
  * @param[in] max  The size of the buffer.
  */
-static void skipSpace( const char * buf,
-                       size_t * start,
-                       size_t max )
+static void skipSpace( const char * buf, size_t * start, size_t max )
 {
     size_t i = 0U;
 
@@ -127,8 +124,7 @@ static size_t countHighBits( uint8_t c )
  *
  * @note Disallow ASCII, as this is called only for multibyte sequences.
  */
-static bool shortestUTF8( size_t length,
-                          uint32_t value )
+static bool shortestUTF8( size_t length, uint32_t value )
 {
     bool ret = false;
     uint32_t min = 0U, max = 0U;
@@ -185,9 +181,7 @@ static bool shortestUTF8( size_t length,
  * would introduce a non-shortest sequence, and F5 or above would
  * introduce a value greater than the last code point, 0x10FFFF.
  */
-static bool skipUTF8MultiByte( const char * buf,
-                               size_t * start,
-                               size_t max )
+static bool skipUTF8MultiByte( const char * buf, size_t * start, size_t max )
 {
     bool ret = false;
     size_t i = 0U, bitCount = 0U, j = 0U;
@@ -249,9 +243,7 @@ static bool skipUTF8MultiByte( const char * buf,
  * @return true if a valid code point was present;
  * false otherwise.
  */
-static bool skipUTF8( const char * buf,
-                      size_t * start,
-                      size_t max )
+static bool skipUTF8( const char * buf, size_t * start, size_t max )
 {
     bool ret = false;
 
@@ -280,7 +272,7 @@ static bool skipUTF8( const char * buf,
  *
  * @return the integer value upon success or NOT_A_HEX_CHAR on failure.
  */
-#define NOT_A_HEX_CHAR    ( 0x10U )
+#define NOT_A_HEX_CHAR ( 0x10U )
 static uint8_t hexToInt( char c )
 {
     char_ n = { 0 };
@@ -323,10 +315,12 @@ static uint8_t hexToInt( char c )
  *
  * @note For the sake of security, \u0000 is disallowed.
  */
-static bool skipOneHexEscape( const char * buf,
-                              size_t * start,
-                              size_t max,
-                              uint16_t * outValue )
+static bool skipOneHexEscape(
+    const char * buf,
+    size_t * start,
+    size_t max,
+    uint16_t * outValue
+)
 {
     bool ret = false;
     size_t i = 0U, end = 0U;
@@ -336,11 +330,13 @@ static bool skipOneHexEscape( const char * buf,
     assert( outValue != NULL );
 
     i = *start;
-#define HEX_ESCAPE_LENGTH    ( 6U )   /* e.g., \u1234 */
+#define HEX_ESCAPE_LENGTH ( 6U ) /* e.g., \u1234 */
     /* MISRA Ref 14.3.1 [Configuration dependent invariant] */
-    /* More details at: https://github.com/FreeRTOS/coreJSON/blob/main/MISRA.md#rule-143 */
+    /* More details at: https://github.com/FreeRTOS/coreJSON/blob/main/MISRA.md#rule-143
+     */
     /* coverity[misra_c_2012_rule_14_3_violation] */
-    end = ( i <= ( SIZE_MAX - HEX_ESCAPE_LENGTH ) ) ? ( i + HEX_ESCAPE_LENGTH ) : SIZE_MAX;
+    end = ( i <= ( SIZE_MAX - HEX_ESCAPE_LENGTH ) ) ? ( i + HEX_ESCAPE_LENGTH )
+                                                    : SIZE_MAX;
 
     if( ( end < max ) && ( buf[ i ] == '\\' ) && ( buf[ i + 1U ] == 'u' ) )
     {
@@ -384,12 +380,10 @@ static bool skipOneHexEscape( const char * buf,
  *
  * @note For the sake of security, \u0000 is disallowed.
  */
-#define isHighSurrogate( x )    ( ( ( x ) >= 0xD800U ) && ( ( x ) <= 0xDBFFU ) )
-#define isLowSurrogate( x )     ( ( ( x ) >= 0xDC00U ) && ( ( x ) <= 0xDFFFU ) )
+#define isHighSurrogate( x ) ( ( ( x ) >= 0xD800U ) && ( ( x ) <= 0xDBFFU ) )
+#define isLowSurrogate( x )  ( ( ( x ) >= 0xDC00U ) && ( ( x ) <= 0xDFFFU ) )
 
-static bool skipHexEscape( const char * buf,
-                           size_t * start,
-                           size_t max )
+static bool skipHexEscape( const char * buf, size_t * start, size_t max )
 {
     bool ret = false;
     size_t i = 0U;
@@ -439,9 +433,7 @@ static bool skipHexEscape( const char * buf,
  *
  * @note For the sake of security, \NUL is disallowed.
  */
-static bool skipEscape( const char * buf,
-                        size_t * start,
-                        size_t max )
+static bool skipEscape( const char * buf, size_t * start, size_t max )
 {
     bool ret = false;
     size_t i = 0U;
@@ -506,9 +498,7 @@ static bool skipEscape( const char * buf,
  * @return true if a valid string was present;
  * false otherwise.
  */
-static bool skipString( const char * buf,
-                        size_t * start,
-                        size_t max )
+static bool skipString( const char * buf, size_t * start, size_t max )
 {
     bool ret = false;
     size_t i = 0;
@@ -571,9 +561,7 @@ static bool skipString( const char * buf,
  * @return true if the sequences are the same;
  * false otherwise
  */
-static bool strnEq( const char * a,
-                    const char * b,
-                    size_t n )
+static bool strnEq( const char * a, const char * b, size_t n )
 {
     size_t i = 0U;
 
@@ -602,11 +590,13 @@ static bool strnEq( const char * a,
  * @return true if the literal was present;
  * false otherwise.
  */
-static bool skipLiteral( const char * buf,
-                         size_t * start,
-                         size_t max,
-                         const char * literal,
-                         size_t length )
+static bool skipLiteral(
+    const char * buf,
+    size_t * start,
+    size_t max,
+    const char * literal,
+    size_t length
+)
 {
     bool ret = false;
 
@@ -636,9 +626,7 @@ static bool skipLiteral( const char * buf,
  * @return true if a valid literal was present;
  * false otherwise.
  */
-static bool skipAnyLiteral( const char * buf,
-                            size_t * start,
-                            size_t max )
+static bool skipAnyLiteral( const char * buf, size_t * start, size_t max )
 {
     bool ret = false;
 
@@ -680,11 +668,8 @@ static bool skipAnyLiteral( const char * buf,
  * @return true if a digit was present;
  * false otherwise.
  */
-#define MAX_FACTOR    ( MAX_INDEX_VALUE / 10 )
-static bool skipDigits( const char * buf,
-                        size_t * start,
-                        size_t max,
-                        int32_t * outValue )
+#define MAX_FACTOR ( MAX_INDEX_VALUE / 10 )
+static bool skipDigits( const char * buf, size_t * start, size_t max, int32_t * outValue )
 {
     bool ret = false;
     size_t i = 0U, saveStart = 0U;
@@ -737,9 +722,7 @@ static bool skipDigits( const char * buf,
  * @param[in,out] start  The index at which to begin.
  * @param[in] max  The size of the buffer.
  */
-static void skipDecimals( const char * buf,
-                          size_t * start,
-                          size_t max )
+static void skipDecimals( const char * buf, size_t * start, size_t max )
 {
     size_t i = 0U;
 
@@ -765,9 +748,7 @@ static void skipDecimals( const char * buf,
  * @param[in,out] start  The index at which to begin.
  * @param[in] max  The size of the buffer.
  */
-static void skipExponent( const char * buf,
-                          size_t * start,
-                          size_t max )
+static void skipExponent( const char * buf, size_t * start, size_t max )
 {
     size_t i = 0U;
 
@@ -801,9 +782,7 @@ static void skipExponent( const char * buf,
  * @return true if a valid number was present;
  * false otherwise.
  */
-static bool skipNumber( const char * buf,
-                        size_t * start,
-                        size_t max )
+static bool skipNumber( const char * buf, size_t * start, size_t max )
 {
     bool ret = false;
     size_t i = 0U;
@@ -857,9 +836,7 @@ static bool skipNumber( const char * buf,
  * @return true if a scalar value was present;
  * false otherwise.
  */
-static bool skipAnyScalar( const char * buf,
-                           size_t * start,
-                           size_t max )
+static bool skipAnyScalar( const char * buf, size_t * start, size_t max )
 {
     bool ret = false;
 
@@ -897,9 +874,7 @@ static bool skipAnyScalar( const char * buf,
  * @return true if a non-terminal comma was present;
  * false otherwise.
  */
-static bool skipSpaceAndComma( const char * buf,
-                               size_t * start,
-                               size_t max )
+static bool skipSpaceAndComma( const char * buf, size_t * start, size_t max )
 {
     bool ret = false;
     size_t i = 0U;
@@ -933,9 +908,7 @@ static bool skipSpaceAndComma( const char * buf,
  *
  * @note Stops advance if a value is an object or array.
  */
-static void skipArrayScalars( const char * buf,
-                              size_t * start,
-                              size_t max )
+static void skipArrayScalars( const char * buf, size_t * start, size_t max )
 {
     size_t i = 0U;
 
@@ -974,9 +947,7 @@ static void skipArrayScalars( const char * buf,
  *
  * @note Stops advance if a value is an object or array.
  */
-static void skipObjectScalars( const char * buf,
-                               size_t * start,
-                               size_t max )
+static void skipObjectScalars( const char * buf, size_t * start, size_t max )
 {
     size_t i = 0U;
     bool comma = false;
@@ -1031,10 +1002,7 @@ static void skipObjectScalars( const char * buf,
  * @param[in] max  The size of the buffer.
  * @param[in] mode  The first character of an array '[' or object '{'.
  */
-static void skipScalars( const char * buf,
-                         size_t * start,
-                         size_t max,
-                         char mode )
+static void skipScalars( const char * buf, size_t * start, size_t max, char mode )
 {
     assert( isOpenBracket_( mode ) );
 
@@ -1066,11 +1034,9 @@ static void skipScalars( const char * buf,
  * #JSONPartial if the buffer contents are potentially valid but incomplete.
  */
 #ifndef JSON_MAX_DEPTH
-    #define JSON_MAX_DEPTH    32
+    #define JSON_MAX_DEPTH 32
 #endif
-static JSONStatus_t skipCollection( const char * buf,
-                                    size_t * start,
-                                    size_t max )
+static JSONStatus_t skipCollection( const char * buf, size_t * start, size_t max )
 {
     JSONStatus_t ret = JSONPartial;
     char c, stack[ JSON_MAX_DEPTH ];
@@ -1119,8 +1085,9 @@ static JSONStatus_t skipCollection( const char * buf,
                     break;
                 }
 
-                ret = ( ( depth == 0 ) && isMatchingBracket_( stack[ depth ], c ) ) ?
-                      JSONSuccess : JSONIllegalDocument;
+                ret = ( ( depth == 0 ) && isMatchingBracket_( stack[ depth ], c ) )
+                          ? JSONSuccess
+                          : JSONIllegalDocument;
                 break;
 
             default:
@@ -1150,8 +1117,7 @@ static JSONStatus_t skipCollection( const char * buf,
  * Verify that the entire buffer contains exactly one scalar
  * or collection within optional whitespace.
  */
-JSONStatus_t JSON_Validate( const char * buf,
-                            size_t max )
+JSONStatus_t JSON_Validate( const char * buf, size_t max )
 {
     JSONStatus_t ret;
     size_t i = 0U;
@@ -1168,14 +1134,14 @@ JSONStatus_t JSON_Validate( const char * buf,
     {
         skipSpace( buf, &i, max );
 
-        /** @cond DO_NOT_DOCUMENT */
-        #ifndef JSON_VALIDATE_COLLECTIONS_ONLY
-            if( skipAnyScalar( buf, &i, max ) == true )
-            {
-                ret = JSONSuccess;
-            }
-            else
-        #endif
+/** @cond DO_NOT_DOCUMENT */
+#ifndef JSON_VALIDATE_COLLECTIONS_ONLY
+        if( skipAnyScalar( buf, &i, max ) == true )
+        {
+            ret = JSONSuccess;
+        }
+        else
+#endif
         /** @endcond */
         {
             ret = skipCollection( buf, &i, max );
@@ -1213,11 +1179,13 @@ JSONStatus_t JSON_Validate( const char * buf,
  * @return true if a value was present;
  * false otherwise.
  */
-static bool nextValue( const char * buf,
-                       size_t * start,
-                       size_t max,
-                       size_t * value,
-                       size_t * valueLength )
+static bool nextValue(
+    const char * buf,
+    size_t * start,
+    size_t max,
+    size_t * value,
+    size_t * valueLength
+)
 {
     bool ret = true;
     size_t i = 0U, valueStart = 0U;
@@ -1268,13 +1236,15 @@ static bool nextValue( const char * buf,
  * @return true if a key-value pair was present;
  * false otherwise.
  */
-static bool nextKeyValuePair( const char * buf,
-                              size_t * start,
-                              size_t max,
-                              size_t * key,
-                              size_t * keyLength,
-                              size_t * value,
-                              size_t * valueLength )
+static bool nextKeyValuePair(
+    const char * buf,
+    size_t * start,
+    size_t max,
+    size_t * key,
+    size_t * keyLength,
+    size_t * value,
+    size_t * valueLength
+)
 {
     bool ret = true;
     size_t i = 0U, keyStart = 0U;
@@ -1341,12 +1311,14 @@ static bool nextKeyValuePair( const char * buf,
  *
  * @note Parsing stops upon finding a match.
  */
-static bool objectSearch( const char * buf,
-                          size_t max,
-                          const char * query,
-                          size_t queryLength,
-                          size_t * outValue,
-                          size_t * outValueLength )
+static bool objectSearch(
+    const char * buf,
+    size_t max,
+    const char * query,
+    size_t queryLength,
+    size_t * outValue,
+    size_t * outValueLength
+)
 {
     bool ret = false;
 
@@ -1364,8 +1336,8 @@ static bool objectSearch( const char * buf,
 
         while( i < max )
         {
-            if( nextKeyValuePair( buf, &i, max, &key, &keyLength,
-                                  &value, &valueLength ) != true )
+            if( nextKeyValuePair( buf, &i, max, &key, &keyLength, &value, &valueLength ) !=
+                true )
             {
                 break;
             }
@@ -1409,11 +1381,13 @@ static bool objectSearch( const char * buf,
  *
  * @note Parsing stops upon finding a match.
  */
-static bool arraySearch( const char * buf,
-                         size_t max,
-                         uint32_t queryIndex,
-                         size_t * outValue,
-                         size_t * outValueLength )
+static bool arraySearch(
+    const char * buf,
+    size_t max,
+    uint32_t queryIndex,
+    size_t * outValue,
+    size_t * outValueLength
+)
 {
     bool ret = false;
     size_t i = 0U, value = 0U, valueLength = 0U;
@@ -1476,13 +1450,15 @@ static bool arraySearch( const char * buf,
  * false otherwise.
  */
 #ifndef JSON_QUERY_KEY_SEPARATOR
-    #define JSON_QUERY_KEY_SEPARATOR    '.'
+    #define JSON_QUERY_KEY_SEPARATOR '.'
 #endif
-#define isSeparator_( x )    ( ( x ) == JSON_QUERY_KEY_SEPARATOR )
-static bool skipQueryPart( const char * buf,
-                           size_t * start,
-                           size_t max,
-                           size_t * outLength )
+#define isSeparator_( x ) ( ( x ) == JSON_QUERY_KEY_SEPARATOR )
+static bool skipQueryPart(
+    const char * buf,
+    size_t * start,
+    size_t max,
+    size_t * outLength
+)
 {
     bool ret = false;
     size_t i = 0U;
@@ -1492,9 +1468,7 @@ static bool skipQueryPart( const char * buf,
 
     i = *start;
 
-    while( ( i < max ) &&
-           !isSeparator_( buf[ i ] ) &&
-           !isSquareOpen_( buf[ i ] ) )
+    while( ( i < max ) && !isSeparator_( buf[ i ] ) && !isSquareOpen_( buf[ i ] ) )
     {
         i++;
     }
@@ -1526,12 +1500,14 @@ static bool skipQueryPart( const char * buf,
  *
  * @note Parsing stops upon finding a match.
  */
-static JSONStatus_t multiSearch( const char * buf,
-                                 size_t max,
-                                 const char * query,
-                                 size_t queryLength,
-                                 size_t * outValue,
-                                 size_t * outValueLength )
+static JSONStatus_t multiSearch(
+    const char * buf,
+    size_t max,
+    const char * query,
+    size_t queryLength,
+    size_t * outValue,
+    size_t * outValueLength
+)
 {
     JSONStatus_t ret = JSONSuccess;
     size_t i = 0U, start = 0U, queryStart = 0U, value = 0U, length = max;
@@ -1551,8 +1527,8 @@ static JSONStatus_t multiSearch( const char * buf,
 
             ( void ) skipDigits( query, &i, queryLength, &queryIndex );
 
-            if( ( queryIndex < 0 ) ||
-                ( i >= queryLength ) || !isSquareClose_( query[ i ] ) )
+            if( ( queryIndex < 0 ) || ( i >= queryLength ) ||
+                !isSquareClose_( query[ i ] ) )
             {
                 ret = JSONBadParameter;
                 break;
@@ -1560,7 +1536,13 @@ static JSONStatus_t multiSearch( const char * buf,
 
             i++;
 
-            found = arraySearch( &buf[ start ], length, ( uint32_t ) queryIndex, &value, &length );
+            found = arraySearch(
+                &buf[ start ],
+                length,
+                ( uint32_t ) queryIndex,
+                &value,
+                &length
+            );
         }
         else
         {
@@ -1576,7 +1558,14 @@ static JSONStatus_t multiSearch( const char * buf,
                 break;
             }
 
-            found = objectSearch( &buf[ start ], length, &query[ queryStart ], keyLength, &value, &length );
+            found = objectSearch(
+                &buf[ start ],
+                length,
+                &query[ queryStart ],
+                keyLength,
+                &value,
+                &length
+            );
         }
 
         if( found == false )
@@ -1653,19 +1642,21 @@ static JSONTypes_t getType( char c )
 /**
  * See core_json.h for docs.
  */
-JSONStatus_t JSON_SearchConst( const char * buf,
-                               size_t max,
-                               const char * query,
-                               size_t queryLength,
-                               const char ** outValue,
-                               size_t * outValueLength,
-                               JSONTypes_t * outType )
+JSONStatus_t JSON_SearchConst(
+    const char * buf,
+    size_t max,
+    const char * query,
+    size_t queryLength,
+    const char ** outValue,
+    size_t * outValueLength,
+    JSONTypes_t * outType
+)
 {
     JSONStatus_t ret;
     size_t value = 0U;
 
-    if( ( buf == NULL ) || ( query == NULL ) ||
-        ( outValue == NULL ) || ( outValueLength == NULL ) )
+    if( ( buf == NULL ) || ( query == NULL ) || ( outValue == NULL ) ||
+        ( outValueLength == NULL ) )
     {
         ret = JSONNullParameter;
     }
@@ -1703,19 +1694,29 @@ JSONStatus_t JSON_SearchConst( const char * buf,
 /**
  * See core_json.h for docs.
  */
-JSONStatus_t JSON_SearchT( char * buf,
-                           size_t max,
-                           const char * query,
-                           size_t queryLength,
-                           char ** outValue,
-                           size_t * outValueLength,
-                           JSONTypes_t * outType )
+JSONStatus_t JSON_SearchT(
+    char * buf,
+    size_t max,
+    const char * query,
+    size_t queryLength,
+    char ** outValue,
+    size_t * outValueLength,
+    JSONTypes_t * outType
+)
 {
     /* MISRA Ref 11.3.1 [Misaligned access] */
-    /* More details at: https://github.com/FreeRTOS/coreJSON/blob/main/MISRA.md#rule-113 */
+    /* More details at: https://github.com/FreeRTOS/coreJSON/blob/main/MISRA.md#rule-113
+     */
     /* coverity[misra_c_2012_rule_11_3_violation] */
-    return JSON_SearchConst( ( const char * ) buf, max, query, queryLength,
-                             ( const char ** ) outValue, outValueLength, outType );
+    return JSON_SearchConst(
+        ( const char * ) buf,
+        max,
+        query,
+        queryLength,
+        ( const char ** ) outValue,
+        outValueLength,
+        outType
+    );
 }
 
 /** @cond DO_NOT_DOCUMENT */
@@ -1736,14 +1737,16 @@ JSONStatus_t JSON_SearchT( char * buf,
  * #JSONIllegalDocument if the buffer does not begin with '[' or '{';
  * #JSONNotFound if there are no further values in the collection.
  */
-static JSONStatus_t iterate( const char * buf,
-                             size_t max,
-                             size_t * start,
-                             size_t * next,
-                             size_t * outKey,
-                             size_t * outKeyLength,
-                             size_t * outValue,
-                             size_t * outValueLength )
+static JSONStatus_t iterate(
+    const char * buf,
+    size_t max,
+    size_t * start,
+    size_t * next,
+    size_t * outKey,
+    size_t * outKeyLength,
+    size_t * outValue,
+    size_t * outValueLength
+)
 {
     JSONStatus_t ret = JSONNotFound;
     bool found = false;
@@ -1769,8 +1772,15 @@ static JSONStatus_t iterate( const char * buf,
                 break;
 
             case '{':
-                found = nextKeyValuePair( buf, next, max, outKey, outKeyLength,
-                                          outValue, outValueLength );
+                found = nextKeyValuePair(
+                    buf,
+                    next,
+                    max,
+                    outKey,
+                    outKeyLength,
+                    outValue,
+                    outValueLength
+                );
                 break;
 
             default:
@@ -1793,17 +1803,18 @@ static JSONStatus_t iterate( const char * buf,
 /**
  * See core_json.h for docs.
  */
-JSONStatus_t JSON_Iterate( const char * buf,
-                           size_t max,
-                           size_t * start,
-                           size_t * next,
-                           JSONPair_t * outPair )
+JSONStatus_t JSON_Iterate(
+    const char * buf,
+    size_t max,
+    size_t * start,
+    size_t * next,
+    JSONPair_t * outPair
+)
 {
     JSONStatus_t ret;
     size_t key = 0U, keyLength = 0U, value = 0U, valueLength = 0U;
 
-    if( ( buf == NULL ) || ( start == NULL ) || ( next == NULL ) ||
-        ( outPair == NULL ) )
+    if( ( buf == NULL ) || ( start == NULL ) || ( next == NULL ) || ( outPair == NULL ) )
     {
         ret = JSONNullParameter;
     }
@@ -1821,8 +1832,7 @@ JSONStatus_t JSON_Iterate( const char * buf,
             skipSpace( buf, next, max );
         }
 
-        ret = iterate( buf, max, start, next, &key, &keyLength,
-                       &value, &valueLength );
+        ret = iterate( buf, max, start, next, &key, &keyLength, &value, &valueLength );
     }
 
     if( ret == JSONSuccess )
