@@ -122,39 +122,39 @@ $(document).ready(function(){initNavTree('json_search_function.html',''); initRe
 <dd>
 <a class="el" href="core__json_8h.html#a1955fd7e92837fa6f234bdfb511cc59d" title="Find a key or array index in a JSON document and output the pointer outValue to its value.">JSON_Search()</a> performs validation, but stops upon finding a matching key and its value. To validate the entire JSON document, use <a class="el" href="core__json_8h.html#af4eb1eb1e2a2563abd0d5404b04aa9ff" title="Parse a buffer to determine if it contains a valid JSON document.">JSON_Validate()</a>.</dd></dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="group__json__enum__types.html#gga2b720193877345b237518677216f00a0a6b579c45491843ff8dbc535fb17a0402" title="JSON document is valid and complete.">JSONSuccess</a> if the query is matched and the value output; <a class="el" href="group__json__enum__types.html#gga2b720193877345b237518677216f00a0ac600e51779a633bc071b876e1b8144a0" title="Pointer parameter passed to a function is NULL.">JSONNullParameter</a> if any pointer parameters are NULL; <a class="el" href="group__json__enum__types.html#gga2b720193877345b237518677216f00a0a8bdd764c656184f942d493fecd12afb1" title="Query key is empty, or any subpart is empty, or max is 0.">JSONBadParameter</a> if the query is empty, or the portion after a separator is empty, or max is 0, or an index is too large to convert to a signed 32-bit integer; <a class="el" href="group__json__enum__types.html#gga2b720193877345b237518677216f00a0a2f53f1dedfe8a356102000360cab5c4d" title="Query key could not be found in the JSON document.">JSONNotFound</a> if the query has no match.</dd></dl>
-<p><b>Example</b> </p><div class="fragment"><div class="line">    <span class="comment">// Variables used in this example.</span></div>
-<div class="line">    <a class="code hl_enumeration" href="group__json__enum__types.html#ga2b720193877345b237518677216f00a0">JSONStatus_t</a> result;</div>
-<div class="line">    <span class="keywordtype">char</span> buffer[] = <span class="stringliteral">&quot;{\&quot;foo\&quot;:\&quot;abc\&quot;,\&quot;bar\&quot;:{\&quot;foo\&quot;:\&quot;xyz\&quot;}}&quot;</span>;</div>
-<div class="line">    <span class="keywordtype">size_t</span> bufferLength = <span class="keyword">sizeof</span>( buffer ) - 1;</div>
-<div class="line">    <span class="keywordtype">char</span> query[] = <span class="stringliteral">&quot;bar.foo&quot;</span>;</div>
-<div class="line">    <span class="keywordtype">size_t</span> queryLength = <span class="keyword">sizeof</span>( query ) - 1;</div>
-<div class="line">    <span class="keywordtype">char</span> * value;</div>
-<div class="line">    <span class="keywordtype">size_t</span> valueLength;</div>
+<p><b>Example</b> </p><div class="fragment"><div class="line"><span class="comment">// Variables used in this example.</span></div>
+<div class="line"><a class="code hl_enumeration" href="group__json__enum__types.html#ga2b720193877345b237518677216f00a0">JSONStatus_t</a> result;</div>
+<div class="line"><span class="keywordtype">char</span> buffer[] = <span class="stringliteral">&quot;{\&quot;foo\&quot;:\&quot;abc\&quot;,\&quot;bar\&quot;:{\&quot;foo\&quot;:\&quot;xyz\&quot;}}&quot;</span>;</div>
+<div class="line"><span class="keywordtype">size_t</span> bufferLength = <span class="keyword">sizeof</span>( buffer ) - 1;</div>
+<div class="line"><span class="keywordtype">char</span> query[] = <span class="stringliteral">&quot;bar.foo&quot;</span>;</div>
+<div class="line"><span class="keywordtype">size_t</span> queryLength = <span class="keyword">sizeof</span>( query ) - 1;</div>
+<div class="line"><span class="keywordtype">char</span> * value;</div>
+<div class="line"><span class="keywordtype">size_t</span> valueLength;</div>
 <div class="line"> </div>
-<div class="line">    <span class="comment">// Calling JSON_Validate() is not necessary if the document is guaranteed</span></div>
-<div class="line">to be valid. result = <a class="code hl_function" href="core__json_8h.html#af4eb1eb1e2a2563abd0d5404b04aa9ff">JSON_Validate</a>( buffer, bufferLength );</div>
+<div class="line"><span class="comment">// Calling JSON_Validate() is not necessary if the document is guaranteed to be valid.</span></div>
+<div class="line">result = <a class="code hl_function" href="core__json_8h.html#af4eb1eb1e2a2563abd0d5404b04aa9ff">JSON_Validate</a>( buffer, bufferLength );</div>
 <div class="line"> </div>
-<div class="line">    <span class="keywordflow">if</span>( result == <a class="code hl_enumvalue" href="group__json__enum__types.html#gga2b720193877345b237518677216f00a0a6b579c45491843ff8dbc535fb17a0402">JSONSuccess</a> )</div>
-<div class="line">    {</div>
-<div class="line">        result = <a class="code hl_define" href="core__json_8h.html#a1955fd7e92837fa6f234bdfb511cc59d">JSON_Search</a>( buffer, bufferLength, query, queryLength,</div>
-<div class="line">                              &amp;value, &amp;valueLength );</div>
-<div class="line">    }</div>
+<div class="line"><span class="keywordflow">if</span>( result == <a class="code hl_enumvalue" href="group__json__enum__types.html#gga2b720193877345b237518677216f00a0a6b579c45491843ff8dbc535fb17a0402">JSONSuccess</a> )</div>
+<div class="line">{</div>
+<div class="line">    result = <a class="code hl_define" href="core__json_8h.html#a1955fd7e92837fa6f234bdfb511cc59d">JSON_Search</a>( buffer, bufferLength, query, queryLength,</div>
+<div class="line">                          &amp;value, &amp;valueLength );</div>
+<div class="line">}</div>
 <div class="line"> </div>
-<div class="line">    <span class="keywordflow">if</span>( result == <a class="code hl_enumvalue" href="group__json__enum__types.html#gga2b720193877345b237518677216f00a0a6b579c45491843ff8dbc535fb17a0402">JSONSuccess</a> )</div>
-<div class="line">    {</div>
-<div class="line">        <span class="comment">// The pointer &quot;value&quot; will point to a location in the &quot;buffer&quot;.</span></div>
-<div class="line">        <span class="keywordtype">char</span> save = value[ valueLength ];</div>
-<div class="line">        <span class="comment">// After saving the character, set it to a null byte for printing.</span></div>
-<div class="line">        value[ valueLength ] = <span class="charliteral">&#39;\0&#39;</span>;</div>
-<div class="line">        <span class="comment">// &quot;Found: bar.foo -&gt; xyz&quot; will be printed.</span></div>
-<div class="line">        printf( <span class="stringliteral">&quot;Found: %s -&gt; %s\n&quot;</span>, query, value );</div>
-<div class="line">        <span class="comment">// Restore the original character.</span></div>
-<div class="line">        value[ valueLength ] = save;</div>
-<div class="line">    }</div>
-<div class="ttc" id="acore__json_8h_html_a1955fd7e92837fa6f234bdfb511cc59d"><div class="ttname"><a href="core__json_8h.html#a1955fd7e92837fa6f234bdfb511cc59d">JSON_Search</a></div><div class="ttdeci">#define JSON_Search(buf, max, query, queryLength, outValue, outValueLength)</div><div class="ttdoc">Find a key or array index in a JSON document and output the pointer outValue to its value.</div><div class="ttdef"><b>Definition:</b> core_json.h:179</div></div>
-<div class="ttc" id="acore__json_8h_html_af4eb1eb1e2a2563abd0d5404b04aa9ff"><div class="ttname"><a href="core__json_8h.html#af4eb1eb1e2a2563abd0d5404b04aa9ff">JSON_Validate</a></div><div class="ttdeci">JSONStatus_t JSON_Validate(const char *buf, size_t max)</div><div class="ttdoc">Parse a buffer to determine if it contains a valid JSON document.</div><div class="ttdef"><b>Definition:</b> core_json.c:1129</div></div>
-<div class="ttc" id="agroup__json__enum__types_html_ga2b720193877345b237518677216f00a0"><div class="ttname"><a href="group__json__enum__types.html#ga2b720193877345b237518677216f00a0">JSONStatus_t</a></div><div class="ttdeci">JSONStatus_t</div><div class="ttdoc">Return codes from coreJSON library functions.</div><div class="ttdef"><b>Definition:</b> core_json.h:48</div></div>
-<div class="ttc" id="agroup__json__enum__types_html_gga2b720193877345b237518677216f00a0a6b579c45491843ff8dbc535fb17a0402"><div class="ttname"><a href="group__json__enum__types.html#gga2b720193877345b237518677216f00a0a6b579c45491843ff8dbc535fb17a0402">JSONSuccess</a></div><div class="ttdeci">@ JSONSuccess</div><div class="ttdoc">JSON document is valid and complete.</div><div class="ttdef"><b>Definition:</b> core_json.h:51</div></div>
+<div class="line"><span class="keywordflow">if</span>( result == <a class="code hl_enumvalue" href="group__json__enum__types.html#gga2b720193877345b237518677216f00a0a6b579c45491843ff8dbc535fb17a0402">JSONSuccess</a> )</div>
+<div class="line">{</div>
+<div class="line">    <span class="comment">// The pointer &quot;value&quot; will point to a location in the &quot;buffer&quot;.</span></div>
+<div class="line">    <span class="keywordtype">char</span> save = value[ valueLength ];</div>
+<div class="line">    <span class="comment">// After saving the character, set it to a null byte for printing.</span></div>
+<div class="line">    value[ valueLength ] = <span class="charliteral">&#39;\0&#39;</span>;</div>
+<div class="line">    <span class="comment">// &quot;Found: bar.foo -&gt; xyz&quot; will be printed.</span></div>
+<div class="line">    printf( <span class="stringliteral">&quot;Found: %s -&gt; %s\n&quot;</span>, query, value );</div>
+<div class="line">    <span class="comment">// Restore the original character.</span></div>
+<div class="line">    value[ valueLength ] = save;</div>
+<div class="line">}</div>
+<div class="ttc" id="acore__json_8h_html_a1955fd7e92837fa6f234bdfb511cc59d"><div class="ttname"><a href="core__json_8h.html#a1955fd7e92837fa6f234bdfb511cc59d">JSON_Search</a></div><div class="ttdeci">#define JSON_Search(buf, max, query, queryLength, outValue, outValueLength)</div><div class="ttdoc">Find a key or array index in a JSON document and output the pointer outValue to its value.</div><div class="ttdef"><b>Definition:</b> core_json.h:172</div></div>
+<div class="ttc" id="acore__json_8h_html_af4eb1eb1e2a2563abd0d5404b04aa9ff"><div class="ttname"><a href="core__json_8h.html#af4eb1eb1e2a2563abd0d5404b04aa9ff">JSON_Validate</a></div><div class="ttdeci">JSONStatus_t JSON_Validate(const char *buf, size_t max)</div><div class="ttdoc">Parse a buffer to determine if it contains a valid JSON document.</div><div class="ttdef"><b>Definition:</b> core_json.c:1153</div></div>
+<div class="ttc" id="agroup__json__enum__types_html_ga2b720193877345b237518677216f00a0"><div class="ttname"><a href="group__json__enum__types.html#ga2b720193877345b237518677216f00a0">JSONStatus_t</a></div><div class="ttdeci">JSONStatus_t</div><div class="ttdoc">Return codes from coreJSON library functions.</div><div class="ttdef"><b>Definition:</b> core_json.h:47</div></div>
+<div class="ttc" id="agroup__json__enum__types_html_gga2b720193877345b237518677216f00a0a6b579c45491843ff8dbc535fb17a0402"><div class="ttname"><a href="group__json__enum__types.html#gga2b720193877345b237518677216f00a0a6b579c45491843ff8dbc535fb17a0402">JSONSuccess</a></div><div class="ttdeci">@ JSONSuccess</div><div class="ttdoc">JSON document is valid and complete.</div><div class="ttdef"><b>Definition:</b> core_json.h:49</div></div>
 </div><!-- fragment --><dl class="section note"><dt>Note</dt><dd>The maximum index value is ~2 billion ( 2^31 - 9 ).   </dd></dl>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
